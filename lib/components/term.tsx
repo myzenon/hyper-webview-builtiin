@@ -6,7 +6,7 @@ import {SearchAddon} from 'xterm-addon-search';
 import {WebglAddon} from 'xterm-addon-webgl';
 import {LigaturesAddon} from 'xterm-addon-ligatures';
 import {Unicode11Addon} from 'xterm-addon-unicode11';
-import {clipboard, shell} from 'electron';
+import {clipboard} from 'electron';
 import Color from 'color';
 import terms from '../terms';
 import processClipboard from '../utils/paste';
@@ -160,11 +160,13 @@ export default class Term extends React.PureComponent<TermProps> {
       this.term.loadAddon(this.searchAddon);
       this.term.loadAddon(
         new WebLinksAddon(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           (event: MouseEventSearchBox | undefined, uri: string) => {
             // if (shallActivateWebLink(event)) void shell.openExternal(uri);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             store.dispatch({
               type: 'SESSION_URL_SET',
               uid: props.uid,
@@ -440,40 +442,36 @@ export default class Term extends React.PureComponent<TermProps> {
         style={{padding: this.props.padding}}
         onMouseUp={this.onMouseUp}
       >
-        {
-          this.props.url ? (
-            <webview
-              src={this.props.url}
-              style={{
-                background: '#fff',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                display: 'inline-flex',
-                width: '100%',
-                height: '100%'
-              }}
-            /> )
-            :
-            (
-              <>
-              {this.props.customChildrenBefore}
-              <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
-              {this.props.customChildren}
-              {this.props.search ? (
-                <SearchBox
-                  search={this.search}
-                  next={this.searchNext}
-                  prev={this.searchPrevious}
-                  close={this.closeSearchBox}
-                />
-              ) : (
-                ''
-              )}
-              </>
-            )
-        }
-        
+        {this.props.url ? (
+          <webview
+            src={this.props.url}
+            style={{
+              background: '#fff',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              display: 'inline-flex',
+              width: '100%',
+              height: '100%'
+            }}
+          />
+        ) : (
+          <>
+            {this.props.customChildrenBefore}
+            <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
+            {this.props.customChildren}
+            {this.props.search ? (
+              <SearchBox
+                search={this.search}
+                next={this.searchNext}
+                prev={this.searchPrevious}
+                close={this.closeSearchBox}
+              />
+            ) : (
+              ''
+            )}
+          </>
+        )}
 
         <style jsx global>{`
           .term_fit {

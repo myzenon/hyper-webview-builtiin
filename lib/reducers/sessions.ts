@@ -64,6 +64,7 @@ const reducer: ISessionReducer = (state = initialState, action) => {
       return state.setIn(['sessions', action.uid, 'search'], action.value);
 
     case SESSION_URL_SET:
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return state.setIn(['sessions', action.uid, 'url'], action.url);
 
