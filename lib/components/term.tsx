@@ -160,8 +160,16 @@ export default class Term extends React.PureComponent<TermProps> {
       this.term.loadAddon(this.searchAddon);
       this.term.loadAddon(
         new WebLinksAddon(
-          (event: MouseEvent | undefined, uri: string) => {
-            if (shallActivateWebLink(event)) void shell.openExternal(uri);
+          // @ts-ignore
+          (event: MouseEventSearchBox | undefined, uri: string) => {
+            // if (shallActivateWebLink(event)) void shell.openExternal(uri);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // @ts-ignore
+            store.dispatch({
+              type: 'SESSION_URL_SET',
+              uid: props.uid,
+              url: uri
+            });
           },
           {
             // prevent default electron link handling to allow selection, e.g. via double-click
@@ -432,19 +440,40 @@ export default class Term extends React.PureComponent<TermProps> {
         style={{padding: this.props.padding}}
         onMouseUp={this.onMouseUp}
       >
-        {this.props.customChildrenBefore}
-        <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
-        {this.props.customChildren}
-        {this.props.search ? (
-          <SearchBox
-            search={this.search}
-            next={this.searchNext}
-            prev={this.searchPrevious}
-            close={this.closeSearchBox}
-          />
-        ) : (
-          ''
-        )}
+        {
+          this.props.url ? (
+            <webview
+              src={this.props.url}
+              style={{
+                background: '#fff',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                display: 'inline-flex',
+                width: '100%',
+                height: '100%'
+              }}
+            /> )
+            :
+            (
+              <>
+              {this.props.customChildrenBefore}
+              <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
+              {this.props.customChildren}
+              {this.props.search ? (
+                <SearchBox
+                  search={this.search}
+                  next={this.searchNext}
+                  prev={this.searchPrevious}
+                  close={this.closeSearchBox}
+                />
+              ) : (
+                ''
+              )}
+              </>
+            )
+        }
+        
 
         <style jsx global>{`
           .term_fit {
