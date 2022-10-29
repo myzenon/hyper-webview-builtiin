@@ -13,6 +13,8 @@ import processClipboard from '../utils/paste';
 import SearchBox from './searchBox';
 import {TermProps} from '../hyper';
 import {ObjectTypedKeys} from '../utils/object';
+import {SESSION_URL_SET} from '../constants/sessions';
+import WebView from './webview';
 
 const isWindows = ['Windows', 'Win16', 'Win32', 'WinCE'].includes(navigator.platform);
 
@@ -168,7 +170,7 @@ export default class Term extends React.PureComponent<TermProps> {
             // @ts-ignore
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             store.dispatch({
-              type: 'SESSION_URL_SET',
+              type: SESSION_URL_SET,
               uid: props.uid,
               url: uri
             });
@@ -442,24 +444,13 @@ export default class Term extends React.PureComponent<TermProps> {
         style={{padding: this.props.padding}}
         onMouseUp={this.onMouseUp}
       >
+        {this.props.customChildrenBefore}
+        <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" style={{opacity: this.props.url ? 0 : 1}} />
+        {this.props.customChildren}
         {this.props.url ? (
-          <webview
-            src={this.props.url}
-            style={{
-              background: '#fff',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              display: 'inline-flex',
-              width: '100%',
-              height: '100%'
-            }}
-          />
+          <WebView url={this.props.url} uid={this.props.uid} />
         ) : (
           <>
-            {this.props.customChildrenBefore}
-            <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
-            {this.props.customChildren}
             {this.props.search ? (
               <SearchBox
                 search={this.search}

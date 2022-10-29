@@ -17,7 +17,7 @@
     "dist": "yarn run build && cross-env BABEL_ENV=production babel target/renderer/bundle.js --out-file target/renderer/bundle.js --no-comments --minified && electron-builder",
     "clean": "node ./bin/rimraf-standalone.js node_modules && node ./bin/rimraf-standalone.js ./app/node_modules && node ./bin/rimraf-standalone.js ./app/renderer",
     "v8-snapshot": "cross-env npm_config_arch=x64 yarn run v8-snapshot:arch && cross-env npm_config_arch=arm64 yarn run v8-snapshot:arch",
-    "v8-snapshot:arch":"yarn run mk-snapshot && yarn run cp-snapshot",
+    "v8-snapshot:arch": "yarn run mk-snapshot && yarn run cp-snapshot",
     "mk-snapshot": "cross-env ELECTRON_CUSTOM_VERSION=$npm_package_devDependencies_electron node node_modules/electron-mksnapshot/download-mksnapshot.js && node bin/mk-snapshot.js",
     "cp-snapshot": "node bin/cp-snapshot.js"
   },
@@ -44,6 +44,7 @@
     "react": "17.0.2",
     "react-deep-force-update": "2.1.3",
     "react-dom": "17.0.2",
+    "react-icons": "^4.6.0",
     "react-redux": "7.2.8",
     "recast": "0.21.5",
     "redux": "4.1.2",
