@@ -36,6 +36,7 @@ export function newWindow(
     // we want to go frameless on Windows and Linux
     frame: process.platform === 'darwin',
     transparent: process.platform === 'darwin',
+    vibrancy: 'ultra-dark',
     icon,
     show: Boolean(process.env.HYPER_DEBUG || process.env.HYPERTERM_DEBUG || isDev),
     acceptFirstMouse: true,
