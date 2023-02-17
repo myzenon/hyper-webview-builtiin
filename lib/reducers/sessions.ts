@@ -10,7 +10,9 @@ import {
   SESSION_RESIZE,
   SESSION_SET_XTERM_TITLE,
   SESSION_SET_CWD,
-  SESSION_SEARCH
+  SESSION_SEARCH,
+  SESSION_URL_SET,
+  SESSION_URL_UNSET
 } from '../constants/sessions';
 import {sessionState, session, Mutable, ISessionReducer} from '../hyper';
 
@@ -61,6 +63,14 @@ const reducer: ISessionReducer = (state = initialState, action) => {
 
     case SESSION_SEARCH:
       return state.setIn(['sessions', action.uid, 'search'], action.value);
+
+    case SESSION_URL_SET:
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return state.setIn(['sessions', action.uid, 'url'], action.url);
+
+    case SESSION_URL_UNSET:
+      return state.setIn(['sessions', action.uid, 'url'], undefined);
 
     case SESSION_CLEAR_ACTIVE:
       return state.merge(

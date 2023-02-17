@@ -6,7 +6,7 @@ import {SearchAddon, ISearchDecorationOptions} from 'xterm-addon-search';
 import {WebglAddon} from 'xterm-addon-webgl';
 import {LigaturesAddon} from 'xterm-addon-ligatures';
 import {Unicode11Addon} from 'xterm-addon-unicode11';
-import {clipboard, shell} from 'electron';
+import {clipboard} from 'electron';
 import Color from 'color';
 import terms from '../terms';
 import processClipboard from '../utils/paste';
@@ -14,6 +14,8 @@ import _SearchBox from './searchBox';
 import {TermProps} from '../hyper';
 import {ObjectTypedKeys} from '../utils/object';
 import {decorate} from '../utils/plugins';
+import {SESSION_URL_SET} from '../constants/sessions';
+import WebView from './webview';
 import 'xterm/css/xterm.css';
 
 const SearchBox = decorate(_SearchBox, 'SearchBox');
@@ -198,7 +200,14 @@ export default class Term extends React.PureComponent<
       this.term.loadAddon(
         new WebLinksAddon(
           (event: MouseEvent | undefined, uri: string) => {
-            if (shallActivateWebLink(event)) void shell.openExternal(uri);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            store.dispatch({
+              type: SESSION_URL_SET,
+              uid: props.uid,
+              url: uri
+            });
           },
           {
             // prevent default electron link handling to allow selection, e.g. via double-click
@@ -495,42 +504,48 @@ export default class Term extends React.PureComponent<
     return (
       <div className={`term_fit ${this.props.isTermActive ? 'term_active' : ''}`} onMouseUp={this.onMouseUp}>
         {this.props.customChildrenBefore}
-        <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" />
+        <div ref={this.onTermWrapperRef} className="term_fit term_wrapper" style={{opacity: this.props.url ? 0 : 1}} />
         {this.props.customChildren}
-        {this.props.search ? (
-          <SearchBox
-            next={this.searchNext}
-            prev={this.searchPrevious}
-            close={this.closeSearchBox}
-            caseSensitive={this.state.searchOptions.caseSensitive}
-            wholeWord={this.state.searchOptions.wholeWord}
-            regex={this.state.searchOptions.regex}
-            results={this.state.searchResults}
-            toggleCaseSensitive={() =>
-              this.setState({
-                ...this.state,
-                searchOptions: {...this.state.searchOptions, caseSensitive: !this.state.searchOptions.caseSensitive}
-              })
-            }
-            toggleWholeWord={() =>
-              this.setState({
-                ...this.state,
-                searchOptions: {...this.state.searchOptions, wholeWord: !this.state.searchOptions.wholeWord}
-              })
-            }
-            toggleRegex={() =>
-              this.setState({
-                ...this.state,
-                searchOptions: {...this.state.searchOptions, regex: !this.state.searchOptions.regex}
-              })
-            }
-            selectionColor={this.props.selectionColor}
-            backgroundColor={this.props.backgroundColor}
-            foregroundColor={this.props.foregroundColor}
-            borderColor={this.props.borderColor}
-            font={this.props.uiFontFamily}
-          />
-        ) : null}
+        {this.props.url ? (
+          <WebView url={this.props.url} uid={this.props.uid} />
+        ) : (
+          <>
+            {this.props.search ? (
+              <SearchBox
+                next={this.searchNext}
+                prev={this.searchPrevious}
+                close={this.closeSearchBox}
+                caseSensitive={this.state.searchOptions.caseSensitive}
+                wholeWord={this.state.searchOptions.wholeWord}
+                regex={this.state.searchOptions.regex}
+                results={this.state.searchResults}
+                toggleCaseSensitive={() =>
+                  this.setState({
+                    ...this.state,
+                    searchOptions: {...this.state.searchOptions, caseSensitive: !this.state.searchOptions.caseSensitive}
+                  })
+                }
+                toggleWholeWord={() =>
+                  this.setState({
+                    ...this.state,
+                    searchOptions: {...this.state.searchOptions, wholeWord: !this.state.searchOptions.wholeWord}
+                  })
+                }
+                toggleRegex={() =>
+                  this.setState({
+                    ...this.state,
+                    searchOptions: {...this.state.searchOptions, regex: !this.state.searchOptions.regex}
+                  })
+                }
+                selectionColor={this.props.selectionColor}
+                backgroundColor={this.props.backgroundColor}
+                foregroundColor={this.props.foregroundColor}
+                borderColor={this.props.borderColor}
+                font={this.props.uiFontFamily}
+              />
+            ) : null}
+          </>
+        )}
 
         <style jsx global>{`
           .term_fit {
