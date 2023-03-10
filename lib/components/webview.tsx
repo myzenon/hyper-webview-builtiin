@@ -25,8 +25,10 @@ export default function WebView({url, uid}: PropsWithChildren<{url: string; uid:
       <webview
         ref={webviewRef}
         src={url}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
-        allowpopups
+        allowpopups="true"
         style={{
           background: '#fff',
           position: 'absolute',
